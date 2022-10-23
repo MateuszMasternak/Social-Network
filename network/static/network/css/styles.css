@@ -1,0 +1,32 @@
+h1 {
+    margin-left: 0.5em;
+}
+
+.card-body {
+    margin: 1em;
+}
+
+.post-timestamp, .post-likes {
+    font-weight: lighter;
+}
+
+#follows p span {
+    font-weight: bold;
+}
+
+.edit-btn, .delete-btn {
+    margin-left: -0.75em;
+}
+
+.bi {
+    color: red;
+}
+
+.post-likes {
+    display: flex;
+}
+
+.likes-count {
+    margin-left: 0.2em;
+}
+
