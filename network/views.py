@@ -1,7 +1,6 @@
-import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import JsonResponse
@@ -100,6 +99,7 @@ def create_post(request):
         else:
             return JsonResponse({"error": "Form's data is invalid."}, status=400)
 
+
 def user_page(request, username):
     form_edit = EditForm()
     form_like = LikeForm()
@@ -131,6 +131,7 @@ def user_page(request, username):
         "form_2": form_edit,
         "form_3": form_like
     })
+
 
 @login_required()
 def follow_user(request):
@@ -181,6 +182,7 @@ def following_page(request):
         "form_3": form_like
     })
 
+
 def edit_post(request):
     if request.method != 'POST':
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -227,8 +229,11 @@ def show_likes(request, post_id):
     if request.method != "GET":
         return JsonResponse({"error": "GET request required."}, status=400)
     else:
-        post = Post.objects.get(id=post_id)
-        likes_number = len(post.likes.all())
+        post = Post.objects.filter(id=post_id)
+        if post.count() != 0:
+            likes_number = len(post[0].likes.all())
+        else:
+            likes_number = 0
 
         data = {
             "likes": likes_number
@@ -237,11 +242,11 @@ def show_likes(request, post_id):
         return JsonResponse(data, safe=False)
     
 
-def delete_post(request, id):
-    post = Post.objects.get(pk=id)
+def delete_post(request, post_id):
+    post = Post.objects.get(id=post_id)
     
     if request.user == post.author:
         post.delete()
-        return JsonResponse({'success': 'Track is deleted successfully.'}, status=200)
+        return JsonResponse({'success': 'Post is deleted successfully.'}, status=200)
     else:
         return JsonResponse({'error': 'You dont have permission.'}, status=400)
