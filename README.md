@@ -12,7 +12,7 @@
 </br>
 
 ## 📄About:
-Social-Network is a Twitter like web app. It contains features such as sign up, log in, creating, deleting and editing posts, managing likes and follows.
+Social-Network is Twitter like web app. The app contains features such as sign up, log in, creating, deleting and editing posts, managing likes and follows.
 </br>
 </br>
 
