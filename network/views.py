@@ -7,13 +7,14 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 
-from .models import User, Post, Follow
-from .forms import PostForm, EditForm, LikeForm
+from .models import User, Post, Follow, Comment
+from .forms import PostForm, EditForm, LikeForm, CommentForm
 from datetime import datetime
 
 
 def index(request):
     form_post = PostForm()
+    form_comment = CommentForm()
     form_edit = EditForm()
     form_like = LikeForm()
     posts = Post.objects.all()
@@ -25,6 +26,7 @@ def index(request):
 
     return render(request, "network/index.html", {
         "form": form_post,
+        "form_comm": form_comment,
         "form_2": form_edit,
         "form_3": form_like,
         "page_obj": page_obj
@@ -221,7 +223,6 @@ def likes(request):
             else:
                 post.likes.add(user)
             post.save()
-            print(post.likes.all())
 
             return JsonResponse({"message": "Like updated successfully."}, status=200)
         else:
@@ -234,12 +235,12 @@ def show_likes(request, post_id):
     else:
         post = Post.objects.filter(id=post_id)
         if post.count() != 0:
-            likes_number = len(post[0].likes.all())
+            likes_count = len(post[0].likes.all())
         else:
-            likes_number = 0
+            likes_count = 0
 
         data = {
-            "likes": likes_number
+            "likes": likes_count
         }
 
         return JsonResponse(data, safe=False)
@@ -256,5 +257,37 @@ def delete_post(request, post_id):
 
 
 @login_required()
-def add_comment(request):
-    pass
+def add_comment(request, post_id):
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+    else:
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.author = User.objects.get(username=request.user.username)
+            new_comment.timestamp = datetime.now()
+            new_comment.related_post = Post.objects.get(pk=post_id)
+            new_comment.save()
+
+            return JsonResponse({"message": "Comment added successfully."}, status=201)
+        else:
+            return JsonResponse({"error": "Form's data is invalid."}, status=400)
+
+
+def count_comments(request, post_id):
+    if request.method != "GET":
+        return JsonResponse({"error": "GET request required."}, status=400)
+    else:
+        post = Post.objects.filter(id=post_id)
+        comm = Comment.objects.filter(related_post=post[0])
+
+        if comm.count() != 0:
+            comm_count = len(comm[0].likes.all())
+        else:
+            comm_count = 0
+
+        data = {
+            "comm_count": comm_count
+        }
+
+        return JsonResponse(data, safe=False)

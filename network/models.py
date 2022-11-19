@@ -32,4 +32,4 @@ class Comment(models.Model):
     text = models.TextField()
     timestamp = models.DateTimeField()
     likes = models.ManyToManyField(User, related_name="lk_comm")
-    related_post = models.OneToOneField(Post, on_delete=models.CASCADE, null=True)
+    related_post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True)

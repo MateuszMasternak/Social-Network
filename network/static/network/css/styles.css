@@ -14,7 +14,7 @@ h1 {
     font-weight: bold;
 }
 
-.edit-btn, .delete-btn {
+.edit-btn, .delete-btn, .comment-btn {
     margin-left: -0.75em;
 }
 
@@ -30,3 +30,10 @@ h1 {
     margin-left: 0.2em;
 }
 
+.comment-btn {
+    margin-top: -2em;
+}
+
+.comm-count {
+    margin-top: 0.5em;
+}

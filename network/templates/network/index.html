@@ -63,6 +63,23 @@
                         {% endif %}
                     </div>
                 </form>
+                {% if user.is_authenticated %}
+                    <div>
+
+                        <button type="button" class="comment-btn btn btn-link">Add comment</button>
+                        <section class="compose card-body border" id="comment-form-body" style="display: none">
+                            <form action="" method="post" id="comment-form">
+                                <div class="form-group">
+                                    <h3 class="card-title">New Comment</h3>
+                                    {% csrf_token %}
+                                    {% render_field form_comm.text class="form-control text-form-field text-comm" %}
+                                    <span id="post_id" style="display: none">{{ post.id }}</span>
+                                </div>
+                                <input type="submit" class="btn btn-primary" value="Comment"/>
+                            </form>
+                        </section>
+                    </div>
+                {% endif %}
             </article>
         {% endfor %}
     </section>

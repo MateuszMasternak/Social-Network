@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const editButton = document.querySelectorAll(".edit-btn");
     editButton.forEach(button => {
-       button.addEventListener("click", () => editPost(button.parentElement));
+       button.addEventListener("click", () => showForm(button.parentElement));
     });
 
     const editForm = document.querySelectorAll(".edit-form");
@@ -20,6 +20,16 @@ document.addEventListener('DOMContentLoaded', function() {
     likeButton.forEach(button => {
         const likeForm = button.parentElement.parentElement.parentElement;
         button.addEventListener("click", () => submitLike(likeForm));
+    });
+
+    const commButton = document.querySelectorAll(".comment-btn");
+    commButton.forEach(button => {
+       button.addEventListener("click", () => showForm(button.parentElement));
+    });
+
+    const commForm = document.querySelectorAll("#comment-form");
+    commForm.forEach(form => {
+        form.addEventListener("submit", (e) => addComm(form, e));
     });
 });
 
@@ -37,12 +47,20 @@ function submitPost(postForm, e) {
         })
 }
 
-function editPost(post) {
-    post.querySelector(".edit-btn").style.display = "none";
-    let text = post.querySelector(".post-text").innerText;
-    post.querySelector(".post-text").style.display = "none";
-    post.querySelector(".edit-form").style.display = "block";
-    post.querySelector("textarea").innerHTML = text;
+function showForm(post) {
+    let editBtn = post.querySelector(".edit-btn");
+    let commBtn = post.querySelector(".comment-btn");
+    if (editBtn) {
+        editBtn.style.display = "none";
+        let text = post.querySelector(".post-text").innerText;
+        post.querySelector(".post-text").style.display = "none";
+        post.querySelector(".edit-form").style.display = "block";
+        post.querySelector("textarea").innerHTML = text;
+    }
+    else if (commBtn) {
+        commBtn.style.display = "none";
+        post.querySelector("#comment-form-body").style.display = "block";
+    }
 }
 
 function submitEdit(editForm, e) {
@@ -59,6 +77,25 @@ function submitEdit(editForm, e) {
             post.querySelector(".post-text").style.display = "block";
             post.querySelector(".edit-form").style.display = "none";
             post.querySelector(".edit-btn").style.display = "block";
+        })
+}
+
+function addComm(form, e) {
+    e.preventDefault();
+    formData = new FormData(form);
+    const postId = form.querySelector("#post_id").innerHTML;
+    const path = `/add-comment/${postId}`
+    fetch(path, {
+        method: 'POST',
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then(() => {
+            getCommCount(form);
+            form.querySelector(".text-comm").value = "";
+            form.parentElement.parentElement.querySelector(".comment-btn").style.display = "block";
+            form.parentElement.parentElement.querySelector(".comment-btn").style.marginTop = "-1.3em";
+            form.parentElement.style.display = "none";
         })
 }
 
@@ -95,7 +132,16 @@ function getLikesCount(parent) {
     fetch(path)
         .then((response) => response.json())
         .then((data) => {
-            const likesNumber = data["likes"];
-            parent.querySelector(".likes-count").innerHTML = likesNumber;
+            parent.querySelector(".likes-count").innerHTML = data["likes"];
+        })
+}
+
+function getCommCount(form) {
+    const postId = form.querySelector("#post_id").innerHTML;
+    const path = `/add-comment/${postId}`
+    fetch(path)
+        .then((response) => response.json())
+        .then((data) => {
+            form.parentElement.parentElement.querySelector(".comm-count").innerHTML = data["comm_count"];
         })
 }
