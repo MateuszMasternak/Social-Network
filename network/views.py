@@ -103,7 +103,10 @@ def create_post(request):
 def user_page(request, username):
     form_edit = EditForm()
     form_like = LikeForm()
-    user = User.objects.get(username=username)
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = None
     posts = Post.objects.filter(author=user)
     posts = posts.order_by("-timestamp").all()
 
