@@ -83,7 +83,7 @@ def register(request):
         return render(request, "network/register.html")
 
 
-@login_required
+@login_required()
 def create_post(request):
     if request.method != 'POST':
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -253,3 +253,8 @@ def delete_post(request, post_id):
         return JsonResponse({'success': 'Post is deleted successfully.'}, status=200)
     else:
         return JsonResponse({'error': 'You dont have permission.'}, status=400)
+
+
+@login_required()
+def add_comment(request):
+    pass
