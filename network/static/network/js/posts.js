@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     likeButton.forEach(button => {
         const likeForm = button.parentElement.parentElement.parentElement;
         button.addEventListener("click", () => submitLike(likeForm));
+        getLikesCount(likeForm)
     });
 
     const commButton = document.querySelectorAll(".comment-btn");
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const commForm = document.querySelectorAll("#comment-form");
     commForm.forEach(form => {
         form.addEventListener("submit", (e) => addComm(form, e));
+        getCommCount(form);
     });
 });
 
@@ -126,22 +128,22 @@ function submitLike(likeForm) {
         })
 }
 
-function getLikesCount(parent) {
-    const postId = parent.querySelector(".like-id").value;
+function getLikesCount(form) {
+    const postId = form.querySelector(".like-id").value;
     const path = `/show-likes/${postId}`;
     fetch(path)
         .then((response) => response.json())
         .then((data) => {
-            parent.querySelector(".likes-count").innerHTML = data["likes"];
+            form.querySelector(".likes-count").innerHTML = data["likes"];
         })
 }
 
 function getCommCount(form) {
     const postId = form.querySelector("#post_id").innerHTML;
-    const path = `/add-comment/${postId}`
+    const path = `/count-comments/${postId}`
     fetch(path)
         .then((response) => response.json())
         .then((data) => {
-            form.parentElement.parentElement.querySelector(".comm-count").innerHTML = data["comm_count"];
+            form.parentElement.parentElement.parentElement.querySelector(".comm-count").innerHTML = data["comm_count"];
         })
 }

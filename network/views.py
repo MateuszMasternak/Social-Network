@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.utils import timezone
 
 from .models import User, Post, Follow, Comment
 from .forms import PostForm, EditForm, LikeForm, CommentForm
@@ -94,7 +95,7 @@ def create_post(request):
         if form.is_valid():
             new_post = form.save(commit=False)
             new_post.author = User.objects.get(username=request.user.username)
-            new_post.timestamp = datetime.now()
+            new_post.timestamp = datetime.now(tz=timezone.utc)
             new_post.save()
 
             return JsonResponse({"message": "Post added successfully."}, status=201)
@@ -265,7 +266,7 @@ def add_comment(request, post_id):
         if form.is_valid():
             new_comment = form.save(commit=False)
             new_comment.author = User.objects.get(username=request.user.username)
-            new_comment.timestamp = datetime.now()
+            new_comment.timestamp = datetime.now(tz=timezone.utc)
             new_comment.related_post = Post.objects.get(pk=post_id)
             new_comment.save()
 
@@ -278,13 +279,10 @@ def count_comments(request, post_id):
     if request.method != "GET":
         return JsonResponse({"error": "GET request required."}, status=400)
     else:
-        post = Post.objects.filter(id=post_id)
+        post = Post.objects.filter(pk=post_id)
         comm = Comment.objects.filter(related_post=post[0])
 
-        if comm.count() != 0:
-            comm_count = len(comm[0].likes.all())
-        else:
-            comm_count = 0
+        comm_count = comm.count()
 
         data = {
             "comm_count": comm_count

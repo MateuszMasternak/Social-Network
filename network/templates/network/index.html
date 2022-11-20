@@ -56,16 +56,12 @@
                                 </svg>
                             </div>
                         {% endif %}
-                        {% if post.likes.all is None %}
-                            <span class="likes-count">0</span>
-                        {% else %}
-                            <span class="likes-count">{{ post.likes.all|length }}</span>
-                        {% endif %}
+                        <span class="likes-count">0</span>
                     </div>
                 </form>
+                <p>Comments: <span class="comm-count">0</span></p>
                 {% if user.is_authenticated %}
                     <div>
-
                         <button type="button" class="comment-btn btn btn-link">Add comment</button>
                         <section class="compose card-body border" id="comment-form-body" style="display: none">
                             <form action="" method="post" id="comment-form">
