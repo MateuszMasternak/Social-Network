@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
     editForm.forEach(form => {
        form.addEventListener("submit", (e) => submitEdit(form, e));
     });
-    // showPosts(false);
 
     const likeButton = document.querySelectorAll(".submit-like");
     likeButton.forEach(button => {
@@ -38,6 +37,19 @@ document.addEventListener('DOMContentLoaded', function() {
     exitAddCommBtn.forEach(button => {
        button.addEventListener("click", () => exitAddComm(button));
     });
+
+    const deleteButtons = document.querySelectorAll(".delete-btn");
+    deleteButtons.forEach(btn => {
+        console.log(btn);
+        const deleteForm = btn.parentElement;
+        const postId = deleteForm.querySelector(".post-id").innerHTML;
+        btn.addEventListener("click", () => deletePost(deleteForm, postId));
+    });
+
+    const followForm = document.querySelector("#follow");
+    if (followForm) {
+        followForm.addEventListener("submit", (e) => followUnfollow(followForm, e));
+    }
 });
 
 function submitPost(postForm, e) {
@@ -162,4 +174,33 @@ function exitAddComm(btn) {
     commBtn.style.display = "block";
     commBtn.style.marginTop = "-1.3em";
     commBtn.style.marginBottom = "0.44em";
+}
+
+function deletePost(deleteForm, postId) {
+    path = `/delete-post/${postId}`
+    formData = new FormData(deleteForm);
+    fetch(path, {
+        method: 'POST',
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then(() => {
+            console.log("DONE");
+            deleteForm.parentElement.remove();
+        })
+}
+
+function followUnfollow(followForm, e   ) {
+    e.preventDefault();
+    formData = new FormData(followForm)
+
+    fetch('/follow', {
+        method: 'POST',
+        body: formData,
+    })
+
+        .then(response => response.json())
+        .then(() => {
+            location.reload();
+        })
 }

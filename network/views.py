@@ -106,6 +106,7 @@ def create_post(request):
 def user_page(request, username):
     form_edit = EditForm()
     form_like = LikeForm()
+    form_comment = CommentForm()
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
@@ -135,7 +136,8 @@ def user_page(request, username):
         "followers_sum": followers_sum,
         "following_sum": following_sum,
         "form_2": form_edit,
-        "form_3": form_like
+        "form_3": form_like,
+        "form_comm": form_comment
     })
 
 
@@ -163,6 +165,7 @@ def follow_user(request):
 @login_required()
 def following_page(request):
     form_like = LikeForm()
+    form_comment = CommentForm()
 
     following_list = Follow.objects.filter(follower=request.user)
     followed_names = []
@@ -185,7 +188,8 @@ def following_page(request):
 
     return render(request, "network/following.html", {
         "page_obj": page_obj,
-        "form_3": form_like
+        "form_comm": form_comment,
+        "form_3": form_like,
     })
 
 
