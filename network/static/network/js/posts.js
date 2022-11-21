@@ -33,6 +33,11 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener("submit", (e) => addComm(form, e));
         getCommCount(form);
     });
+
+    const exitAddCommBtn = document.querySelectorAll("#exitCommentForm");
+    exitAddCommBtn.forEach(button => {
+       button.addEventListener("click", () => exitAddComm(button));
+    });
 });
 
 function submitPost(postForm, e) {
@@ -95,8 +100,10 @@ function addComm(form, e) {
         .then(() => {
             getCommCount(form);
             form.querySelector(".text-comm").value = "";
-            form.parentElement.parentElement.querySelector(".comment-btn").style.display = "block";
-            form.parentElement.parentElement.querySelector(".comment-btn").style.marginTop = "-1.3em";
+            let commBtn = form.parentElement.parentElement.querySelector(".comment-btn");
+            commBtn.style.display = "block";
+            commBtn.style.marginTop = "-1.3em";
+            commBtn.style.marginBottom = "0.44em";
             form.parentElement.style.display = "none";
         })
 }
@@ -115,7 +122,7 @@ function submitLike(likeForm) {
             const filledHeart = heartBox.querySelector(".bi-heart-fill");
             if (heart) {
                 heartBox.innerHTML = "";
-                heartBox.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill submit-like" viewBox="0 0 16 17"> <path fill-rule="evenodd"d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"></path></svg>';
+                heartBox.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill submit-like" viewBox="0 0 16 17"> <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"></path></svg>';
                 const likeBtn = likeForm.querySelector('.submit-like');
                 likeBtn.addEventListener("click", () => submitLike(likeForm));
             }
@@ -146,4 +153,13 @@ function getCommCount(form) {
         .then((data) => {
             form.parentElement.parentElement.parentElement.querySelector(".comm-count").innerHTML = data["comm_count"];
         })
+}
+
+function exitAddComm(btn) {
+    let body = btn.parentElement.parentElement.parentElement.parentElement;
+    body.style.display = "none";
+    let commBtn = body.parentElement.querySelector(".comment-btn");
+    commBtn.style.display = "block";
+    commBtn.style.marginTop = "-1.3em";
+    commBtn.style.marginBottom = "0.44em";
 }

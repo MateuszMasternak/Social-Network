@@ -37,3 +37,11 @@ h1 {
 .comm-count {
     margin-top: 0.5em;
 }
+
+.bi-x-lg {
+    color: black;
+}
+
+.bi-x-lg:hover {
+    cursor: pointer;
+}
