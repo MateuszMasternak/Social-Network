@@ -18,6 +18,7 @@ def index(request):
     form_comment = CommentForm()
     form_edit = EditForm()
     form_like = LikeForm()
+
     posts = Post.objects.all()
     posts = posts.order_by("-timestamp").all()
 
@@ -293,3 +294,25 @@ def count_comments(request, post_id):
         }
 
         return JsonResponse(data, safe=False)
+
+
+def show_comments(request, post_id):
+    form_comment = CommentForm()
+    form_edit = EditForm()
+    form_like = LikeForm()
+
+    post = Post.objects.filter(pk=post_id)
+    comments = Comment.objects.filter(related_post=post_id).order_by("-timestamp")
+
+    paginator = Paginator(comments, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "network/comments.html", {
+        "page_obj": page_obj,
+        "post": post[0],
+        "form_comm": form_comment,
+        "form_2": form_edit,
+        "form_3": form_like,
+    })
+

@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const postForm = document.querySelector("#compose-form");
     if (postForm) {
         postForm.addEventListener("submit", (e) => submitPost(postForm, e));
-        // postForm.addEventListener("submit", (e) => showPosts(e));
     }
 
     const editButton = document.querySelectorAll(".edit-btn");
@@ -30,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const commForm = document.querySelectorAll("#comment-form");
     commForm.forEach(form => {
         form.addEventListener("submit", (e) => addComm(form, e));
-        getCommCount(form);
     });
 
     const exitAddCommBtn = document.querySelectorAll("#exitCommentForm");
@@ -40,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const deleteButtons = document.querySelectorAll(".delete-btn");
     deleteButtons.forEach(btn => {
-        console.log(btn);
         const deleteForm = btn.parentElement;
         const postId = deleteForm.querySelector(".post-id").innerHTML;
         btn.addEventListener("click", () => deletePost(deleteForm, postId));
@@ -50,6 +47,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (followForm) {
         followForm.addEventListener("submit", (e) => followUnfollow(followForm, e));
     }
+
+    const posts = document.querySelectorAll(".post");
+    posts.forEach(post => {
+        getCommCount(post, true);
+    });
 });
 
 function submitPost(postForm, e) {
@@ -157,13 +159,21 @@ function getLikesCount(form) {
         })
 }
 
-function getCommCount(form) {
+function getCommCount(form, load=false) {
     const postId = form.querySelector("#post_id").innerHTML;
     const path = `/count-comments/${postId}`
     fetch(path)
         .then((response) => response.json())
         .then((data) => {
-            form.parentElement.parentElement.parentElement.querySelector(".comm-count").innerHTML = data["comm_count"];
+            if (!load) {
+                form.parentElement.parentElement.parentElement.querySelector(".comm-count").innerHTML = data["comm_count"];
+                console.log(data["comm_count"]);
+            }
+            else {
+                form.querySelector(".comm-count").innerHTML = data["comm_count"];
+                console.log(data["comm_count"]);
+            }
+
         })
 }
 
@@ -177,7 +187,7 @@ function exitAddComm(btn) {
 }
 
 function deletePost(deleteForm, postId) {
-    path = `/delete-post/${postId}`
+    const path = `/delete-post/${postId}`
     formData = new FormData(deleteForm);
     fetch(path, {
         method: 'POST',
@@ -185,7 +195,6 @@ function deletePost(deleteForm, postId) {
     })
         .then((response) => response.json())
         .then(() => {
-            console.log("DONE");
             deleteForm.parentElement.remove();
         })
 }

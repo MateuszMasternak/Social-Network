@@ -45,7 +45,7 @@
                     <span class="likes-count">0</span>
                 </div>
             </form>
-            <p>Comments: <span class="comm-count">0</span></p>
+            <p>Comments: <a href="/comments/{{ post.id }}" class="comm-count">0</a></p>
             {% if user.is_authenticated %}
                 <div>
                     <button type="button" class="comment-btn btn btn-link">Add comment</button>
@@ -69,6 +69,8 @@
                         </form>
                     </section>
                 </div>
+            {% else %}
+                <span id="post_id" style="display: none">{{ post.id }}</span>
             {% endif %}
             {% if user.is_authenticated and user == post.author %}
                 <form method="post" action="" class="delete-form">

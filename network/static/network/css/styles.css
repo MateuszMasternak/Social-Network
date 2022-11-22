@@ -18,10 +18,6 @@ h1 {
     margin-left: -0.75em;
 }
 
-.bi {
-    color: red;
-}
-
 .post-likes {
     display: flex;
 }
@@ -43,5 +39,26 @@ h1 {
 }
 
 .bi-x-lg:hover {
+    cursor: pointer;
+}
+
+.bi-heart, .bi-heart-fill {
+    transition: all 200ms ease-in-out 0s;
+}
+
+.bi-heart:hover {
+    cursor: pointer;
+    color: red;
+}
+
+.bi-heart-fill {
+    color: red;
+}
+
+.bi-heart-fill:hover {
+    color: black;
+}
+
+.comm-count:hover {
     cursor: pointer;
 }
