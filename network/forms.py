@@ -8,9 +8,15 @@ class PostForm(forms.ModelForm):
         fields = ('text',)
 
 
-class EditForm(forms.Form):
+class EditPostForm(forms.Form):
     text = forms.CharField(widget=forms.Textarea(), required=True)
     id = forms.IntegerField(required=True, widget=forms.HiddenInput())
+
+
+class EditCommForm(forms.Form):
+    text = forms.CharField(widget=forms.Textarea(), required=True)
+    post_id = forms.IntegerField(required=True, widget=forms.HiddenInput())
+    comment_id = forms.IntegerField(required=True, widget=forms.HiddenInput())
 
 
 class LikeForm(forms.Form):

@@ -14,6 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
        form.addEventListener("submit", (e) => submitEdit(form, e));
     });
 
+    const editCommButton = document.querySelectorAll(".edit-comm-btn");
+    editCommButton.forEach(button => {
+       button.addEventListener("click", () => showForm(button.parentElement));
+    });
+
+    const formEditComm = document.querySelectorAll(".edit-comm-form");
+    formEditComm.forEach(form => {
+       form.addEventListener("submit", (e) => submitEditComm(form, e));
+    });
+
     const likeButton = document.querySelectorAll(".submit-like");
     likeButton.forEach(button => {
         const likeForm = button.parentElement.parentElement.parentElement;
@@ -79,6 +89,7 @@ function submitPost(postForm, e) {
 function showForm(post) {
     let editBtn = post.querySelector(".edit-btn");
     let commBtn = post.querySelector(".comment-btn");
+    let editCommBtn = post.querySelector(".edit-comm-btn");
     if (editBtn) {
         editBtn.style.display = "none";
         let text = post.querySelector(".post-text").innerText;
@@ -89,6 +100,13 @@ function showForm(post) {
     else if (commBtn) {
         commBtn.style.display = "none";
         post.querySelector("#comment-form-body").style.display = "block";
+    }
+    else if (editCommBtn) {
+        editCommBtn.style.display = "none";
+        let text = post.querySelector(".post-text").innerText;
+        post.querySelector(".post-text").style.display = "none";
+        post.querySelector(".edit-comm-form").style.display = "block";
+        post.querySelector("textarea").innerHTML = text;
     }
 }
 
@@ -106,6 +124,23 @@ function submitEdit(editForm, e) {
             post.querySelector(".post-text").style.display = "block";
             post.querySelector(".edit-form").style.display = "none";
             post.querySelector(".edit-btn").style.display = "block";
+        })
+}
+
+function submitEditComm(editForm, e) {
+    e.preventDefault();
+    formData = new FormData(editForm);
+    fetch('/edit-comment', {
+        method: 'POST',
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then(() => {
+            const post = editForm.parentElement;
+            post.querySelector(".post-text").innerText = post.querySelector(".edit-textarea").value;
+            post.querySelector(".post-text").style.display = "block";
+            post.querySelector(".edit-comm-form").style.display = "none";
+            post.querySelector(".edit-comm-btn").style.display = "block";
         })
 }
 

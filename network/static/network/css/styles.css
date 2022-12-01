@@ -22,7 +22,7 @@ h1 {
     font-weight: bold;
 }
 
-.edit-btn, .delete-btn, .comment-btn, .delete-comm-btn {
+.edit-btn, .delete-btn, .comment-btn, .delete-comm-btn, .edit-comm-btn {
     margin-left: -0.75em;
 }
 
