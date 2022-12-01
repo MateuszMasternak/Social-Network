@@ -12,7 +12,7 @@
 </br>
 
 ## 📄About:
-Social-Network is Twitter like web app. The app contains features such as sign up, log in, creating, deleting and editing posts, managing likes and follows.
+Social-Network is Twitter like web app. The app contains features such as sign up, log in, creating, deleting and editing posts/comments, managing likes and follows.
 </br>
 </br>
 
@@ -24,10 +24,10 @@ Social-Network is Twitter like web app. The app contains features such as sign u
 > https://docs.python.org/3/tutorial/venv.html.
 * Download all dependencies:
 > python -m pip install -r requirements.txt.
-* From the main directory type in the console:
-> python manage.py makemigrations  
-> python manage.py migrate  
-> python manage.py createsuperuser&nbsp;&nbsp;# then follow instructions  
-> python manage.py runserver  
+* From the main directory type in the console: 
+> python manage.py migrate    
+> python manage.py runserver
+* You can also create admin acc by:
+> python manage.py createsuperuser&nbsp;&nbsp;# then follow instructions
 </br>
 That's it.
