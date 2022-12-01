@@ -9,14 +9,14 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 
 from .models import User, Post, Follow, Comment
-from .forms import PostForm, EditForm, LikeForm, CommentForm
+from .forms import PostForm, EditPostForm, LikeForm, CommentForm, EditCommForm
 from datetime import datetime
 
 
 def index(request):
     form_post = PostForm()
     form_comment = CommentForm()
-    form_edit = EditForm()
+    form_post_edit = EditPostForm()
     form_like = LikeForm()
 
     posts = Post.objects.all()
@@ -29,7 +29,7 @@ def index(request):
     return render(request, "network/index.html", {
         "form": form_post,
         "form_comm": form_comment,
-        "form_2": form_edit,
+        "form_2": form_post_edit,
         "form_3": form_like,
         "page_obj": page_obj
     })
@@ -106,7 +106,7 @@ def create_post(request):
 
 
 def user_page(request, username):
-    form_edit = EditForm()
+    form_edit = EditPostForm()
     form_like = LikeForm()
     form_comment = CommentForm()
     try:
@@ -200,7 +200,7 @@ def edit_post(request):
     if request.method != 'POST':
         return JsonResponse({"error": "POST request required."}, status=400)
     else:
-        form = EditForm(request.POST)
+        form = EditPostForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
             post_to_update = Post.objects.get(id=data["id"])
@@ -211,6 +211,27 @@ def edit_post(request):
                 return JsonResponse({"error": "Unauthorized."}, status=401)
 
             return JsonResponse({"message": "Post updated successfully."}, status=200)
+        else:
+            return JsonResponse({"error": "Form's data is invalid."}, status=400)
+
+
+@login_required()
+def edit_comment(request):
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+    else:
+        form = EditCommForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            post = Post.objects.get(pk=data["post_id"])
+            comment_to_update = Comment.objects.get(pk=data["comment_id"], related_post=post)
+            if comment_to_update.author == request.user:
+                comment_to_update.text = data["text"]
+                comment_to_update.save()
+            else:
+                return JsonResponse({"error": "Unauthorized."}, status=401)
+
+            return JsonResponse({"message": "Comment updated successfully."}, status=200)
         else:
             return JsonResponse({"error": "Form's data is invalid."}, status=400)
 
@@ -256,13 +277,16 @@ def show_likes(request, post_id):
 
 @login_required()
 def delete_post(request, post_id):
-    post = Post.objects.get(id=post_id)
-    
-    if request.user == post.author:
-        post.delete()
-        return JsonResponse({'success': 'Post is deleted successfully.'}, status=200)
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
     else:
-        return JsonResponse({'error': 'You dont have permission.'}, status=400)
+        post = Post.objects.get(id=post_id)
+        
+        if request.user == post.author:
+            post.delete()
+            return JsonResponse({'success': 'Post is deleted successfully.'}, status=200)
+        else:
+            return JsonResponse({'error': 'You dont have permission.'}, status=400)
 
 
 @login_required()
@@ -301,7 +325,8 @@ def count_comments(request, post_id):
 
 def show_comments(request, post_id):
     form_comment = CommentForm()
-    form_edit = EditForm()
+    form_edit = EditPostForm()
+    form_edit_comm = EditCommForm()
     form_like = LikeForm()
 
     post = Post.objects.filter(pk=post_id)
@@ -317,16 +342,20 @@ def show_comments(request, post_id):
         "form_comm": form_comment,
         "form_2": form_edit,
         "form_3": form_like,
+        "form_edit_comm": form_edit_comm
     })
 
 
 @login_required()
 def delete_comment(request, post_id, comment_id):
-    post = Post.objects.get(id=post_id)
-    comment = Comment.objects.get(pk=comment_id, related_post=post)
-    
-    if request.user == comment.author:
-        comment.delete()
-        return JsonResponse({'success': 'Comment is deleted successfully.'}, status=200)
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
     else:
-        return JsonResponse({'error': 'You dont have permission.'}, status=400)
+        post = Post.objects.get(id=post_id)
+        comment = Comment.objects.get(pk=comment_id, related_post=post)
+        
+        if request.user == comment.author:
+            comment.delete()
+            return JsonResponse({'success': 'Comment is deleted successfully.'}, status=200)
+        else:
+            return JsonResponse({'error': 'You dont have permission.'}, status=400)

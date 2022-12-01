@@ -87,6 +87,18 @@
                 <article class="post card-body border">
                     <h3 class="card-title"><a class="author-link" href="user/{{ comment.author }}">{{ comment.author }}</a>
                     </h3>
+                    {% if post.author == request.user %}
+                        <button type="button" class="edit-comm-btn btn btn-link">Edit</button>
+                        <form action="" method="post" class="edit-comm-form" style="display: none">
+                            <div class="form-group">
+                                {% csrf_token %}
+                                {% render_field form_edit_comm.text class="form-control text-form-field edit-textarea" %}
+                                {% render_field form_edit_comm.post_id value=post.id class="edit-post-id" %}
+                                {% render_field form_edit_comm.comment_id value=comment.id class="edit-comm-id" %}
+                            </div>
+                            <input type="submit" class="btn btn-primary" value="Save"/>
+                        </form>
+                    {% endif %}
                     <p class="post-text">{{ comment.text|linebreaksbr }}</p>
                     <p class="post-timestamp">{{ comment.timestamp }}</p>
                     {% if user.is_authenticated and user == comment.author %}
