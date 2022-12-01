@@ -145,10 +145,6 @@ def user_page(request, username):
 @login_required()
 def follow_user(request):
     if request.method == 'POST':
-        # url = request.META.get('HTTP_REFERER')
-        # url = url.split("/")
-        # username = url[-1]
-
         form = FollowForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
