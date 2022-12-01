@@ -2,7 +2,7 @@
 
 <section id="posts">
     {% for post in page_obj %}
-        <article class="post card-body border">
+        <article class="post card-body border post-body">
             <h3 class="card-title"><a class="author-link" href="user/{{ post.author }}">{{ post.author }}</a></h3>
             {% if post.author == request.user %}
                 <button type="button" class="edit-btn btn btn-link">Edit</button>

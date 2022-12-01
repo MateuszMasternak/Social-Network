@@ -20,7 +20,9 @@
 
     {% include 'network/include/posts.html' %}
 
-    {% include 'network/include/pagination.html' %}
+    {% if page_obj.has_previous or page_obj.has_next %}
+        {% include 'network/include/pagination.html' %}
+    {% endif %}
 {% endblock %}
 
 {% block script %}

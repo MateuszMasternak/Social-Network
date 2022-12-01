@@ -55,6 +55,7 @@ def login_view(request):
         return render(request, "network/login.html")
 
 
+@login_required()
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
@@ -194,6 +195,7 @@ def following_page(request):
     })
 
 
+@login_required()
 def edit_post(request):
     if request.method != 'POST':
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -252,6 +254,7 @@ def show_likes(request, post_id):
         return JsonResponse(data, safe=False)
     
 
+@login_required()
 def delete_post(request, post_id):
     post = Post.objects.get(id=post_id)
     
@@ -316,3 +319,14 @@ def show_comments(request, post_id):
         "form_3": form_like,
     })
 
+
+@login_required()
+def delete_comment(request, post_id, comment_id):
+    post = Post.objects.get(id=post_id)
+    comment = Comment.objects.get(pk=comment_id, related_post=post)
+    
+    if request.user == comment.author:
+        comment.delete()
+        return JsonResponse({'success': 'Comment is deleted successfully.'}, status=200)
+    else:
+        return JsonResponse({'error': 'You dont have permission.'}, status=400)
