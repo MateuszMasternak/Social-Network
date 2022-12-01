@@ -3,14 +3,14 @@
 <section id="posts">
     {% for post in page_obj %}
         <article class="post card-body border post-body">
-            <h3 class="card-title"><a class="author-link" href="user/{{ post.author }}">{{ post.author }}</a></h3>
+            <h3 class="card-title"><a class="author-link" href="/user/{{ post.author }}">{{ post.author }}</a></h3>
             {% if post.author == request.user %}
                 <button type="button" class="edit-btn btn btn-link">Edit</button>
                 <form action="" method="post" class="edit-form" style="display: none">
                     <div class="form-group">
                         {% csrf_token %}
-                        {% render_field form_2.text class="form-control text-form-field edit-textarea" %}
-                        {% render_field form_2.id value=post.id class="edit-id" %}
+                        {% render_field edit_post_form.text class="form-control text-form-field edit-textarea" %}
+                        {% render_field edit_post_form.id value=post.id class="edit-id" %}
                     </div>
                     <input type="submit" class="btn btn-primary" value="Save"/>
                 </form>
@@ -19,7 +19,7 @@
             <p class="post-timestamp">{{ post.timestamp }}</p>
             <form action="" method="post" class="like-form">
                 {% csrf_token %}
-                {% render_field form_3.id value=post.id class="like-id" %}
+                {% render_field handle_like_form.id value=post.id class="like-id" %}
                 <div class="post-likes">
                     {% if request.user in post.likes.all %}
                         <div id="heart">
@@ -62,7 +62,7 @@
                                     </svg>
                                 </div>
                                 {% csrf_token %}
-                                {% render_field form_comm.text class="form-control text-form-field text-comm" %}
+                                {% render_field add_comm_form.text class="form-control text-form-field text-comm" %}
                                 <span id="post_id" style="display: none">{{ post.id }}</span>
                             </div>
                             <input type="submit" class="btn btn-primary" value="Comment"/>

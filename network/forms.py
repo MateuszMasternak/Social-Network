@@ -27,3 +27,7 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('text',)
+
+
+class FollowForm(forms.Form):
+    id = forms.IntegerField(required=True, widget=forms.HiddenInput())

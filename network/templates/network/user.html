@@ -9,10 +9,11 @@
         <p>followers: <span>{{ followers_sum }}</span></p>
         <p>following: <span>{{ following_sum }}</span></p>
         <form action="" method="post" id="follow">
+            {% render_field handle_follow_form.id value=username class="follow-id" %}
             {% csrf_token %}
-            {% if is_followed is True %}
+            {% if is_followed == 2 %}
                 <input type="submit" class="btn btn-danger" value="Unfollow">
-            {% elif is_followed is False %}
+            {% elif is_followed == 1 %}
                 <input type="submit" class="btn btn-primary" value="Follow">
             {% endif %}
         </form>

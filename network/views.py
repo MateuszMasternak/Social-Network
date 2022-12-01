@@ -9,15 +9,15 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 
 from .models import User, Post, Follow, Comment
-from .forms import PostForm, EditPostForm, LikeForm, CommentForm, EditCommForm
+from .forms import PostForm, EditPostForm, LikeForm, CommentForm, EditCommForm, FollowForm
 from datetime import datetime
 
 
 def index(request):
-    form_post = PostForm()
-    form_comment = CommentForm()
-    form_post_edit = EditPostForm()
-    form_like = LikeForm()
+    add_post_form = PostForm()
+    add_comm_form = CommentForm()
+    edit_post_form = EditPostForm()
+    handle_like_form = LikeForm()
 
     posts = Post.objects.all()
     posts = posts.order_by("-timestamp").all()
@@ -27,10 +27,10 @@ def index(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, "network/index.html", {
-        "form": form_post,
-        "form_comm": form_comment,
-        "form_2": form_post_edit,
-        "form_3": form_like,
+        "add_post_form": add_post_form,
+        "add_comm_form": add_comm_form,
+        "edit_post_form": edit_post_form,
+        "handle_like_form": handle_like_form,
         "page_obj": page_obj
     })
 
@@ -38,12 +38,10 @@ def index(request):
 def login_view(request):
     if request.method == "POST":
 
-        # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
 
-        # Check if authentication successful
         if user is not None:
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
@@ -66,7 +64,6 @@ def register(request):
         username = request.POST["username"]
         email = request.POST["email"]
 
-        # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
@@ -74,7 +71,6 @@ def register(request):
                 "message": "Passwords must match."
             })
 
-        # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
@@ -90,9 +86,7 @@ def register(request):
 
 @login_required()
 def create_post(request):
-    if request.method != 'POST':
-        return JsonResponse({"error": "POST request required."}, status=400)
-    else:
+    if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
             new_post = form.save(commit=False)
@@ -102,13 +96,17 @@ def create_post(request):
 
             return JsonResponse({"message": "Post added successfully."}, status=201)
         else:
-            return JsonResponse({"error": "Form's data is invalid."}, status=400)
+            return JsonResponse({"error": "Form's data is invalid."}, status=400)             
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 def user_page(request, username):
-    form_edit = EditPostForm()
-    form_like = LikeForm()
-    form_comment = CommentForm()
+    edit_post_form = EditPostForm()
+    handle_like_form = LikeForm()
+    add_comm_form = CommentForm()
+    handle_follow_form = FollowForm()
+    
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
@@ -125,11 +123,11 @@ def user_page(request, username):
     followers_sum = len(followers)
     following_sum = len(following)
 
-    is_followed = "not logged in or is the same user"
+    is_followed = 0  # don't show follow button 
     if request.user.is_authenticated and user != request.user:
-        is_followed = False
+        is_followed = 1  # show follow button
         if len(Follow.objects.filter(followed=user, follower=request.user)) == 1:
-            is_followed = True
+            is_followed = 2  # show unfollow button
 
     return render(request, "network/user.html", {
         "page_obj": page_obj,
@@ -137,31 +135,36 @@ def user_page(request, username):
         "is_followed": is_followed,
         "followers_sum": followers_sum,
         "following_sum": following_sum,
-        "form_2": form_edit,
-        "form_3": form_like,
-        "form_comm": form_comment
+        "edit_post_form": edit_post_form,
+        "handle_like_form": handle_like_form,
+        "add_comm_form": add_comm_form,
+        "handle_follow_form": handle_follow_form
     })
 
 
 @login_required()
 def follow_user(request):
-    if request.method != 'POST':
-        return JsonResponse({"error": "POST request required."}, status=400)
+    if request.method == 'POST':
+        # url = request.META.get('HTTP_REFERER')
+        # url = url.split("/")
+        # username = url[-1]
+
+        form = FollowForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            followed_user = User.objects.get(username=data["id"])
+            following_user = request.user
+
+            if len(Follow.objects.filter(followed=followed_user, follower=following_user)) == 0:
+                new_follow = Follow(followed=followed_user, follower=following_user)
+                new_follow.save()
+            else:
+                delete_follow = Follow.objects.get(followed=followed_user, follower=following_user)
+                delete_follow.delete()
+
+            return JsonResponse({"message": "Followed successfully."}, status=201)        
     else:
-        url = request.META.get('HTTP_REFERER')
-        url = url.split("/")
-        username = url[-1]
-        followed_user = User.objects.get(username=username)
-        following_user = request.user
-
-        if len(Follow.objects.filter(followed=followed_user, follower=following_user)) == 0:
-            new_follow = Follow(followed=followed_user, follower=following_user)
-            new_follow.save()
-        else:
-            delete_follow = Follow.objects.get(followed=followed_user, follower=following_user)
-            delete_follow.delete()
-
-        return JsonResponse({"message": "Followed successfully."}, status=201)
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 @login_required()

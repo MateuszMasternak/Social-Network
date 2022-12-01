@@ -12,15 +12,6 @@ class Post(models.Model):
     timestamp = models.DateTimeField()
     likes = models.ManyToManyField(User, related_name="liked")
 
-    # def serialize(self):
-    #     return {
-    #         "id": self.id,
-    #         "author": self.author.username,
-    #         "text": self.text,
-    #         "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
-    #         "likes": self.likes
-    #     }
-
 
 class Follow(models.Model):
     follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')

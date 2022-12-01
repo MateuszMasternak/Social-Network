@@ -10,7 +10,7 @@
                 <div class="form-group">
                     <h3 class="card-title">New Post</h3>
                     {% csrf_token %}
-                    {% render_field form.text class="form-control text-form-field" %}
+                    {% render_field add_post_form.text class="form-control text-form-field" %}
                 </div>
                 <input type="submit" class="btn btn-primary" value="Post"/>
             </form>

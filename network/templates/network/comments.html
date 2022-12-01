@@ -6,7 +6,7 @@
     <h1>Comments</h1>
 
     <article class="post card-body border post-body">
-        <h3 class="card-title"><a class="author-link" href="user/{{ post.author }}">{{ post.author }}</a></h3>
+        <h3 class="card-title"><a class="author-link" href="/user/{{ post.author }}">{{ post.author }}</a></h3>
         {% if post.author == request.user %}
             <button type="button" class="edit-btn btn btn-link">Edit</button>
             <form action="" method="post" class="edit-form" style="display: none">
@@ -85,7 +85,7 @@
         <section id="posts">
             {% for comment in page_obj %}
                 <article class="post card-body border">
-                    <h3 class="card-title"><a class="author-link" href="user/{{ comment.author }}">{{ comment.author }}</a>
+                    <h3 class="card-title"><a class="author-link" href="/user/{{ comment.author }}">{{ comment.author }}</a>
                     </h3>
                     {% if post.author == request.user %}
                         <button type="button" class="edit-comm-btn btn btn-link">Edit</button>
