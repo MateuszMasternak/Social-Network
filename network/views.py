@@ -196,13 +196,11 @@ def following_page(request):
 
 @login_required()
 def edit_post(request):
-    if request.method != 'POST':
-        return JsonResponse({"error": "POST request required."}, status=400)
-    else:
+    if request.method == 'POST':
         form = EditPostForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            post_to_update = Post.objects.get(id=data["id"])
+            post_to_update = Post.objects.get(pk=data["id"])
             if post_to_update.author == request.user:
                 post_to_update.text = data["text"]
                 post_to_update.save()
@@ -212,13 +210,13 @@ def edit_post(request):
             return JsonResponse({"message": "Post updated successfully."}, status=200)
         else:
             return JsonResponse({"error": "Form's data is invalid."}, status=400)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 @login_required()
 def edit_comment(request):
     if request.method != 'POST':
-        return JsonResponse({"error": "POST request required."}, status=400)
-    else:
         form = EditCommForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
@@ -233,6 +231,8 @@ def edit_comment(request):
             return JsonResponse({"message": "Comment updated successfully."}, status=200)
         else:
             return JsonResponse({"error": "Form's data is invalid."}, status=400)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 @login_required()
