@@ -110,7 +110,8 @@ def user_page(request, username):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
-        user = None
+        return JsonResponse({"error": "User does not exist."}, status=400)
+        # user = None
     posts = Post.objects.filter(author=user)
     posts = posts.order_by("-timestamp").all()
 
@@ -237,16 +238,13 @@ def edit_comment(request):
 
 @login_required()
 def likes(request):
-    if request.method != 'POST':
-        return JsonResponse({"error": "POST request required."}, status=400)
-    else:
+    if request.method == 'POST':
         form = LikeForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            post = Post.objects.get(id=data["id"])
+            post = Post.objects.get(pk=data["id"])
             user = User.objects.get(username=request.user)
-            print(post.likes.all())
-            if Post.objects.filter(id=data["id"], likes__username=request.user):
+            if Post.objects.filter(pk=data["id"], likes__username=request.user):
                 post.likes.remove(user)
             else:
                 post.likes.add(user)
@@ -255,23 +253,20 @@ def likes(request):
             return JsonResponse({"message": "Like updated successfully."}, status=200)
         else:
             return JsonResponse({"error": "Form's data is invalid."}, status=400)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 def show_likes(request, post_id):
-    if request.method != "GET":
-        return JsonResponse({"error": "GET request required."}, status=400)
-    else:
-        post = Post.objects.filter(id=post_id)
-        if post.count() != 0:
-            likes_count = len(post[0].likes.all())
-        else:
-            likes_count = 0
-
+    try:
+        post = Post.objects.get(pk=post_id)
+        likes_count = len(post.likes.all())
         data = {
             "likes": likes_count
         }
-
         return JsonResponse(data, safe=False)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post does not exist."}, status=400)
     
 
 @login_required()
