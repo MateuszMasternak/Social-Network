@@ -320,7 +320,11 @@ def show_comments(request, post_id):
     edit_comm_form = EditCommForm()
     handle_like_form = LikeForm()
 
-    post = Post.objects.filter(pk=post_id)
+    try:
+        post = Post.objects.get(pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post does not exist."}, status=400)
+
     comments = Comment.objects.filter(related_post=post_id).order_by("-timestamp")
 
     paginator = Paginator(comments, 5)
@@ -329,7 +333,7 @@ def show_comments(request, post_id):
 
     return render(request, "network/comments.html", {
         "page_obj": page_obj,
-        "post": post[0],
+        "post": post,
         "add_comm_form": add_comm_form,
         "edit_post_form": edit_post_form,
         "handle_like_form": handle_like_form,
