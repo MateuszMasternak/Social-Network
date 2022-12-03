@@ -284,9 +284,7 @@ def delete_post(request, post_id):
 
 @login_required()
 def add_comment(request, post_id):
-    if request.method != 'POST':
-        return JsonResponse({"error": "POST request required."}, status=400)
-    else:
+    if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
             new_comment = form.save(commit=False)
@@ -294,19 +292,17 @@ def add_comment(request, post_id):
             new_comment.timestamp = datetime.now(tz=timezone.utc)
             new_comment.related_post = Post.objects.get(pk=post_id)
             new_comment.save()
-
             return JsonResponse({"message": "Comment added successfully."}, status=201)
         else:
             return JsonResponse({"error": "Form's data is invalid."}, status=400)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 def count_comments(request, post_id):
-    if request.method != "GET":
-        return JsonResponse({"error": "GET request required."}, status=400)
-    else:
-        post = Post.objects.filter(pk=post_id)
-        comm = Comment.objects.filter(related_post=post[0])
-
+    try:
+        post = Post.objects.get(pk=post_id)
+        comm = Comment.objects.filter(related_post=post)
         comm_count = comm.count()
 
         data = {
@@ -314,13 +310,15 @@ def count_comments(request, post_id):
         }
 
         return JsonResponse(data, safe=False)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post does not exist."}, status=400)
 
 
 def show_comments(request, post_id):
-    form_comment = CommentForm()
-    form_edit = EditPostForm()
-    form_edit_comm = EditCommForm()
-    form_like = LikeForm()
+    add_comm_form = CommentForm()
+    edit_post_form = EditPostForm()
+    edit_comm_form = EditCommForm()
+    handle_like_form = LikeForm()
 
     post = Post.objects.filter(pk=post_id)
     comments = Comment.objects.filter(related_post=post_id).order_by("-timestamp")
@@ -332,10 +330,10 @@ def show_comments(request, post_id):
     return render(request, "network/comments.html", {
         "page_obj": page_obj,
         "post": post[0],
-        "form_comm": form_comment,
-        "form_2": form_edit,
-        "form_3": form_like,
-        "form_edit_comm": form_edit_comm
+        "add_comm_form": add_comm_form,
+        "edit_post_form": edit_post_form,
+        "handle_like_form": handle_like_form,
+        "edit_comm_form": edit_comm_form
     })
 
 
