@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const followForm = document.querySelector("#follow");
     if (followForm) {
+        getFollowsCount();
         followForm.addEventListener("submit", (e) => followUnfollow(followForm, e));
     }
 
@@ -198,7 +199,7 @@ function submitLike(likeForm) {
 
 function getLikesCount(form) {
     const postId = form.querySelector(".like-id").value;
-    const path = `/show-likes/${postId}`;
+    const path = `/count-likes/${postId}`;
     fetch(path)
         .then((response) => response.json())
         .then((data) => {
@@ -269,6 +270,19 @@ function followUnfollow(followForm, e   ) {
 
         .then(response => response.json())
         .then(() => {
-            location.reload();
+            // location.reload();
+            getFollowsCount();
+        })
+}
+
+function getFollowsCount() {
+    const username = document.querySelector("#username").innerHTML;
+    const path = `/count-follows/${username}`;
+    fetch(path)
+        .then((response) => response.json())
+        .then((data) => {
+            document.querySelector("#followers").innerHTML = data["followers_sum"];
+            document.querySelector("#following").innerHTML = data["following_sum"];
+            document.querySelector("#follow-btn-container").innerHTML = data["follow_btn"];
         })
 }

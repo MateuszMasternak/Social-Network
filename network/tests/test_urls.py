@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 from network.views import index, login_view, logout_view, register, create_post, user_page, follow_user, following_page
-from network.views import edit_post, likes, show_likes, delete_post
+from network.views import edit_post, likes, count_likes, delete_post
 
 
 class TestUrls(SimpleTestCase):
@@ -13,7 +13,7 @@ class TestUrls(SimpleTestCase):
             reversed_url = reverse(url)
             self.assertEquals(resolve(reversed_url).func, url)
 
-        urls_with_id = [show_likes, delete_post]
+        urls_with_id = [count_likes, delete_post]
         for url in urls_with_id:
             reversed_url = reverse(url, kwargs={'post_id': 1})
             self.assertEquals(resolve(reversed_url).func, url)

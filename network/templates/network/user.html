@@ -3,19 +3,16 @@
 {% load widget_tweaks %}
 
 {% block body %}
-    <h1>{{ username }}'s profile</h1>
+    <h1><span id="username">{{ username }}</span>'s profile</h1>
 
-	<section id="follows" class="card-body border">
-        <p>followers: <span>{{ followers_sum }}</span></p>
-        <p>following: <span>{{ following_sum }}</span></p>
+	<section id="follows" class="card-body d-flex flex-column align-items-center">
+        <p>followers: <span id="followers">0</span></p>
+        <p>following: <span id="following">0</span></p>
         <form action="" method="post" id="follow">
             {% render_field handle_follow_form.id value=username class="follow-id" %}
             {% csrf_token %}
-            {% if is_followed == 2 %}
-                <input type="submit" class="btn btn-danger" value="Unfollow">
-            {% elif is_followed == 1 %}
-                <input type="submit" class="btn btn-primary" value="Follow">
-            {% endif %}
+            <div id="follow-btn-container">
+            </div>
         </form>
     </section>
 

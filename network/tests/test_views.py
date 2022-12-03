@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from network.views import index, login_view, logout_view, register, create_post, user_page, follow_user, following_page
-from network.views import edit_post, likes, show_likes, delete_post
+from network.views import edit_post, likes, count_likes, delete_post
 from network.models import User, Post, Follow
 
 

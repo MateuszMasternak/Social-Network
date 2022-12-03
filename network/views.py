@@ -119,23 +119,21 @@ def user_page(request, username):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    followers = Follow.objects.filter(followed=user)
-    following = Follow.objects.filter(follower=user)
-    followers_sum = len(followers)
-    following_sum = len(following)
+    # followers = Follow.objects.filter(followed=user)
+    # following = Follow.objects.filter(follower=user)
+    # followers_sum = len(followers)
+    # following_sum = len(following)
 
-    is_followed = 0  # don't show follow button 
-    if request.user.is_authenticated and user != request.user:
-        is_followed = 1  # show follow button
-        if len(Follow.objects.filter(followed=user, follower=request.user)) == 1:
-            is_followed = 2  # show unfollow button
+    # is_followed = 0  # don't show follow button
+    # if request.user.is_authenticated and user != request.user:
+    #     is_followed = 1  # show follow button
+    #     if len(Follow.objects.filter(followed=user, follower=request.user)) == 1:
+    #         is_followed = 2  # show unfollow button
 
     return render(request, "network/user.html", {
         "page_obj": page_obj,
         "username": username,
-        "is_followed": is_followed,
-        "followers_sum": followers_sum,
-        "following_sum": following_sum,
+        # "is_followed": is_followed,
         "edit_post_form": edit_post_form,
         "handle_like_form": handle_like_form,
         "add_comm_form": add_comm_form,
@@ -257,7 +255,7 @@ def likes(request):
         return JsonResponse({"error": "POST request required."}, status=400)
 
 
-def show_likes(request, post_id):
+def count_likes(request, post_id):
     try:
         post = Post.objects.get(pk=post_id)
         likes_count = len(post.likes.all())
@@ -268,6 +266,30 @@ def show_likes(request, post_id):
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post does not exist."}, status=400)
     
+
+def count_follows(request, username):
+    try:
+        user = User.objects.get(username=username)
+
+        followers_sum = Follow.objects.filter(followed=user).count()
+        following_sum = Follow.objects.filter(follower=user).count()
+
+        follow_btn = ""
+        if request.user.is_authenticated and user != request.user:
+            follow_btn = '<input type="submit" class="btn btn-primary" value="Follow">'
+            if len(Follow.objects.filter(followed=user, follower=request.user)) == 1:
+                follow_btn = '<input type="submit" class="btn btn-danger" value="Unfollow">'
+
+        data = {
+            "followers_sum": followers_sum,
+            "following_sum": following_sum,
+            "follow_btn": follow_btn
+        }
+
+        return JsonResponse(data, safe=False)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post does not exist."}, status=400)
+
 
 @login_required()
 def delete_post(request, post_id):
