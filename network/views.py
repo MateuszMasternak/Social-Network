@@ -165,8 +165,8 @@ def follow_user(request):
 
 @login_required()
 def following_page(request):
-    form_like = LikeForm()
-    form_comment = CommentForm()
+    handle_like_form = LikeForm()
+    add_comm_form = CommentForm()
 
     following_list = Follow.objects.filter(follower=request.user)
     followed_names = []
@@ -179,8 +179,8 @@ def following_page(request):
 
     posts = []
     for list_ in posts_lists:
-        for element in list_:
-            posts.append(element)
+        for post in list_:
+            posts.append(post)
     posts = sorted(posts, key=lambda instance: instance.timestamp, reverse=True)
 
     paginator = Paginator(posts, 10)
@@ -189,8 +189,8 @@ def following_page(request):
 
     return render(request, "network/following.html", {
         "page_obj": page_obj,
-        "form_comm": form_comment,
-        "form_3": form_like,
+        "add_comm_form": add_comm_form,
+        "handle_like_form": handle_like_form,
     })
 
 
