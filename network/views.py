@@ -271,16 +271,15 @@ def show_likes(request, post_id):
 
 @login_required()
 def delete_post(request, post_id):
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
-    else:
-        post = Post.objects.get(id=post_id)
-        
+    if request.method == "POST":
+        post = Post.objects.get(pk=post_id)
         if request.user == post.author:
             post.delete()
             return JsonResponse({'success': 'Post is deleted successfully.'}, status=200)
         else:
             return JsonResponse({'error': 'You dont have permission.'}, status=400)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 @login_required()
@@ -342,14 +341,13 @@ def show_comments(request, post_id):
 
 @login_required()
 def delete_comment(request, post_id, comment_id):
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
-    else:
-        post = Post.objects.get(id=post_id)
+    if request.method == "POST":
+        post = Post.objects.get(pk=post_id)
         comment = Comment.objects.get(pk=comment_id, related_post=post)
-        
         if request.user == comment.author:
             comment.delete()
             return JsonResponse({'success': 'Comment is deleted successfully.'}, status=200)
         else:
             return JsonResponse({'error': 'You dont have permission.'}, status=400)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
