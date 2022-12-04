@@ -119,21 +119,9 @@ def user_page(request, username):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # followers = Follow.objects.filter(followed=user)
-    # following = Follow.objects.filter(follower=user)
-    # followers_sum = len(followers)
-    # following_sum = len(following)
-
-    # is_followed = 0  # don't show follow button
-    # if request.user.is_authenticated and user != request.user:
-    #     is_followed = 1  # show follow button
-    #     if len(Follow.objects.filter(followed=user, follower=request.user)) == 1:
-    #         is_followed = 2  # show unfollow button
-
     return render(request, "network/user.html", {
         "page_obj": page_obj,
         "username": username,
-        # "is_followed": is_followed,
         "edit_post_form": edit_post_form,
         "handle_like_form": handle_like_form,
         "add_comm_form": add_comm_form,
